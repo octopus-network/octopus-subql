@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   postgres:
@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: postgres
 
   subquery-node:
-    image: onfinality/subql-node:latest
+    image: octopus-subql-node:latest # from onfinality/subql-node:latest # docker build -t octopus-subql-node .
     depends_on:
       - "postgres"
     restart: always
@@ -21,11 +21,10 @@ services:
       DB_DATABASE: postgres
       DB_HOST: postgres
       DB_PORT: 5432
-    volumes:
-      - ./:/app
     command:
       - -f=/app
       - --local
+      - --network-endpoint=wss://barnacle.rpc.testnet.oct.network:9944
 
   graphql-engine:
     image: onfinality/subql-query:latest
