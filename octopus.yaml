@@ -121,7 +121,7 @@ spec:
     spec:
       containers:
       - name: "octopus-node"
-        image: "baidang201/octopus-subql-node:latest"
+        image: "gcr.io/cdot-dev-303308/octopus-subql-node:latest"
         args:
         - -f=/app
         - --migrate
@@ -162,7 +162,7 @@ spec:
     spec:
       containers:
       - name: "octopus-node"
-        image: "baidang201/octopus-subql-node:latest"
+        image: "gcr.io/cdot-dev-303308/octopus-subql-node:latest"
         args:
         - -f=/app
         - --migrate
