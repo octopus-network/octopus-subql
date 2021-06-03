@@ -1,0 +1,329 @@
+---
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  name: "octopus-config-zorh"
+  namespace: "default"
+  labels:
+    app: "octopus"
+data:
+  WS_BARNACLE_MAIN: "wss://barnacle.rpc.testnet.oct.network:9944"
+  WS_BARNACLE_TEST: "wss://kusama-rpc.polkadot.io"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-claim-1
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+status: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-claim-2
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+status: {}
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "postgres-1"
+  namespace: "default"
+  labels:
+    app: "postgres-1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "postgres-1"
+  template:
+    metadata:
+      labels:
+        app: "postgres-1"
+    spec:
+      containers:
+      - name: "octopus-node"
+        image: "postgres:12-alpine"
+        ports:
+        - containerPort: 5432
+          name: tcp-postgres
+        env:
+        - name: "POSTGRES_PASSWORD"
+          value: "postgres"
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-claim-1
+      volumes:
+      - name: postgres-claim-1
+        persistentVolumeClaim:
+          claimName: postgres-claim-1
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "postgres-2"
+  namespace: "default"
+  labels:
+    app: "postgres-2"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "postgres-2"
+  template:
+    metadata:
+      labels:
+        app: "postgres-2"
+    spec:
+      containers:
+      - name: "octopus-node"
+        image: "postgres:12-alpine"
+        ports:
+        - containerPort: 5432
+          name: tcp-postgres
+        env:
+        - name: "POSTGRES_PASSWORD"
+          value: "postgres"
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-claim-2
+      volumes:
+      - name: postgres-claim-2
+        persistentVolumeClaim:
+          claimName: postgres-claim-2
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "octopus-subql-node-1"
+  namespace: "default"
+  labels:
+    app: "octopus-subql-node-1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "octopus-subql-node-1"
+  template:
+    metadata:
+      labels:
+        app: "octopus-subql-node-1"
+    spec:
+      containers:
+      - name: "octopus-node"
+        image: "baidang201/octopus-subql-node:latest"
+        args:
+        - -f=/app
+        - --migrate
+        - --network-endpoint=$(WS_BARNACLE_MAIN)
+        env:
+        - name: DB_DATABASE
+          value: postgres
+        - name: DB_HOST
+          value: postgres-1-service.default.svc.cluster.local
+        - name: DB_PASS
+          value: "postgres"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_USER
+          value: postgres
+        - name: WS_BARNACLE_MAIN
+          valueFrom:
+            configMapKeyRef:
+              name: "octopus-config-zorh"
+              key: "WS_BARNACLE_MAIN"
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "octopus-subql-node-2"
+  namespace: "default"
+  labels:
+    app: "octopus-subql-node-2"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "octopus-subql-node-2"
+  template:
+    metadata:
+      labels:
+        app: "octopus-subql-node-2"
+    spec:
+      containers:
+      - name: "octopus-node"
+        image: "baidang201/octopus-subql-node:latest"
+        args:
+        - -f=/app
+        - --migrate
+        - --network-endpoint=$(WS_BARNACLE_TEST)
+        env:
+        - name: DB_DATABASE
+          value: postgres
+        - name: DB_HOST
+          value: postgres-2-service.default.svc.cluster.local
+        - name: DB_PASS
+          value: "postgres"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_USER
+          value: postgres
+        - name: WS_BARNACLE_TEST
+          valueFrom:
+            configMapKeyRef:
+              name: "octopus-config-zorh"
+              key: "WS_BARNACLE_TEST"
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "graphql-engine-1"
+  namespace: "default"
+  labels:
+    app: "graphql-engine-1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "graphql-engine-1"
+  template:
+    metadata:
+      labels:
+        app: "graphql-engine-1"
+    spec:
+      containers:
+      - name: "octopus-node"
+        image: "onfinality/subql-query:latest"
+        ports:
+        - containerPort: 3000
+          name: http-rpc
+        args:
+        - --name=app
+        - --playground
+        env:
+        - name: DB_DATABASE
+          value: postgres
+        - name: DB_HOST
+          value: postgres-1-service.default.svc.cluster.local
+        - name: DB_PASS
+          value: "postgres"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_USER
+          value: postgres
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "graphql-engine-2"
+  namespace: "default"
+  labels:
+    app: "graphql-engine-2"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "graphql-engine-2"
+  template:
+    metadata:
+      labels:
+        app: "graphql-engine-2"
+    spec:
+      containers:
+      - name: "octopus-node"
+        image: "onfinality/subql-query:latest"
+        ports:
+        - containerPort: 3000
+          name: http-rpc
+        args:
+        - --name=app
+        - --playground
+        env:
+        - name: DB_DATABASE
+          value: postgres
+        - name: DB_HOST
+          value: postgres-2-service.default.svc.cluster.local
+        - name: DB_PASS
+          value: "postgres"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_USER
+          value: postgres
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  name: "postgres-1-service"
+  namespace: "default"
+  labels:
+    app: "postgres-1"
+spec:
+  ports:
+  - port: 5432
+    name: tcp-postgres
+    protocol: "TCP"
+    targetPort: 5432
+  selector:
+    app: "postgres-1"
+  type: "ClusterIP"
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  name: "postgres-2-service"
+  namespace: "default"
+  labels:
+    app: "postgres-2"
+spec:
+  ports:
+  - port: 5432
+    name: tcp-postgres
+    protocol: "TCP"
+    targetPort: 5432
+  selector:
+    app: "postgres-2"
+  type: "ClusterIP"
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  name: "graphql-engine-1-service"
+  namespace: "default"
+  labels:
+    app: "graphql-engine-1"
+spec:
+  ports:
+  - port: 3000
+    name: http-rpc
+    protocol: "TCP"
+    targetPort: 3000
+  selector:
+    app: "graphql-engine-1"
+  type: "NodePort"
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  name: "graphql-engine-2-service"
+  namespace: "default"
+  labels:
+    app: "graphql-engine-2"
+spec:
+  ports:
+  - port: 3000
+    name: http-rpc
+    protocol: "TCP"
+    targetPort: 3000
+  selector:
+    app: "graphql-engine-2"
+  type: "NodePort"
