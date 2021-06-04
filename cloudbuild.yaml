@@ -9,7 +9,18 @@ steps:
          'subql-node.Dockerfile',
          '.']
 - name: "gcr.io/cloud-builders/docker"
-  args: ["push", "gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA"]
+  args: ["push", "gcr.io/$PROJECT_ID/$REPO_NAME-node:$COMMIT_SHA"]
+- name: "gcr.io/cloud-builders/docker"
+  args: ['build',
+         '--build-arg',
+         'RELEASE_VERSION=0.5.1',
+         '-t',
+         'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA',
+         '-f',
+         'subql-query.Dockerfile',
+         '.']
+- name: "gcr.io/cloud-builders/docker"
+  args: ["push", "gcr.io/$PROJECT_ID/$REPO_NAME-query:$COMMIT_SHA"]
   # - name: "gcr.io/cloud-builders/gke-deploy"
   #   args:
   #   - run
