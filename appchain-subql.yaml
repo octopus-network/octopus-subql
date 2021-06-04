@@ -16,6 +16,8 @@ spec:
       - name: application-appchain-barnacle-node
         image: "gcr.io/octopus-dev-309403/octopus-subql-node:0.15.1"
         args:
+          - -f=/workdir
+          - --local
           - --network-endpoint=wss://barnacle.rpc.testnet.oct.network:9944
         env:
         - name: DB_USER
