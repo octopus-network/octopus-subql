@@ -4,7 +4,7 @@ steps:
          '--build-arg',
          'RELEASE_VERSION=0.15.1',
          '-t',
-         'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA',
+         'gcr.io/$PROJECT_ID/$REPO_NAME-node:$COMMIT_SHA',
          '-f',
          'subql-node.Dockerfile',
          '.']
@@ -15,7 +15,7 @@ steps:
          '--build-arg',
          'RELEASE_VERSION=0.5.1',
          '-t',
-         'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA',
+         'gcr.io/$PROJECT_ID/$REPO_NAME-query:$COMMIT_SHA',
          '-f',
          'subql-query.Dockerfile',
          '.']
