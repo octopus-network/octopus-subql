@@ -17,7 +17,8 @@ spec:
         image: "gcr.io/octopus-dev-309403/octopus-subql-node:0.15.1"
         args:
           - -f=/workdir
-          - --local
+          - --subquery-name=barnacle
+          - --migrate
           - --network-endpoint=wss://barnacle.rpc.testnet.oct.network:9944
         env:
         - name: DB_USER
@@ -41,7 +42,8 @@ spec:
         - containerPort: 3000
           name: http-rpc
         args:
-          - --name=appchain-barnacle
+          - --name=barnacle
+          - --playground
         env:
         - name: DB_USER
           valueFrom:
