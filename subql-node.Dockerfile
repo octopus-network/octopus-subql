@@ -9,4 +9,9 @@ ENTRYPOINT ["/sbin/tini", "--", "subql-node"]
 RUN npm i -g @subql/node@${RELEASE_VERSION}
 WORKDIR /workdir
 
-CMD ["-f","/app"]
+COPY . .
+RUN yarn install
+RUN yarn codegen
+RUN yarn build
+
+CMD ["-f","/workdir"]
