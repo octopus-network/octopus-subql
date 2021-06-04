@@ -1,0 +1,28 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build',
+         '--build-arg',
+         'RELEASE_VERSION=${_NODE_RELEASE_VERSION}',
+         '-t',
+         'gcr.io/$PROJECT_ID/$REPO_NAME-node:${_NODE_RELEASE_VERSION}',
+         '-f',
+         'subql-node.Dockerfile',
+         '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/$REPO_NAME-node:${_NODE_RELEASE_VERSION}']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build',
+         '--build-arg',
+         'RELEASE_VERSION=${_QUERY_RELEASE_VERSION}',
+         '-t',
+         'gcr.io/$PROJECT_ID/$REPO_NAME-query:${_QUERY_RELEASE_VERSION}',
+         '-f',
+         'subql-query.Dockerfile',
+         '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/$REPO_NAME-query:${_QUERY_RELEASE_VERSION}']
+substitutions:
+  _NODE_RELEASE_VERSION: 0.15.1
+  _QUERY_RELEASE_VERSION: 0.5.1
+options:
+  machineType: 'E2_HIGHCPU_32'

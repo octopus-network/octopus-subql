@@ -3,7 +3,7 @@ description: ''
 repository: https://github.com/octopus-network/octopus-subql
 schema: ./schema.graphql
 network:
-  endpoint: wss://debio.rpc.testnet.oct.network:9944
+  endpoint: wss://polkadot.api.onfinality.io/public-ws
   types:
     AccountInfo: AccountInfoWithDualRefCount
     Address: MultiAddress
