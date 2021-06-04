@@ -5,6 +5,8 @@ steps:
          'RELEASE_VERSION=0.15.1',
          '-t',
          'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA',
+         '-f',
+         'subql-node.Dockerfile',
          '.']
 - name: "gcr.io/cloud-builders/docker"
   args: ["push", "gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA"]
