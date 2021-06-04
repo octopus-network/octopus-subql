@@ -21,16 +21,8 @@ steps:
          '.']
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/$PROJECT_ID/$REPO_NAME-query:${_QUERY_RELEASE_VERSION}']
-  # - name: 'gcr.io/cloud-builders/gke-deploy'
-  #   args:
-  #   - run
-  #   - --filename=octopus.yaml
-  #   - --image=gcr.io/$PROJECT_ID/$REPO_NAME-octopus:$COMMIT_SHA
-  #   - --location=asia-east1-c
-  #   - --cluster=cluster-1
-  # timeout: 1800s
 substitutions:
-    _NODE_RELEASE_VERSION: 0.15.1
-    _QUERY_RELEASE_VERSION: 0.5.1
+  _NODE_RELEASE_VERSION: 0.15.1
+  _QUERY_RELEASE_VERSION: 0.5.1
 options:
   machineType: 'E2_HIGHCPU_32'
