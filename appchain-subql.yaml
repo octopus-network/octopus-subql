@@ -84,3 +84,19 @@ spec:
             secretKeyRef:
               name: octopus-subql
               key: database
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: application-appchain-barnacle-query-service
+  labels:
+    app: application-appchain-barnacle-query-service
+spec:
+  ports:
+  - port: 3001
+    name: http-rpc
+    protocol: "TCP"
+    targetPort: 3001
+  selector:
+    app: application-appchain-barnacle
+  type: LoadBalancer
