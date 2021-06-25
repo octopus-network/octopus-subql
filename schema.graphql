@@ -78,3 +78,13 @@ type Transfer @entity {
   timestamp: Date
   isSuccess: Boolean
 }
+
+type SystemTokenTransfer @entity {
+  id: ID!
+
+  from: Account
+  to: Account
+  amount: BigInt
+  timestamp: Date
+  extrinsic: Extrinsic
+}
