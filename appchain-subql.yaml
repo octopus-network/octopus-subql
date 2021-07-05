@@ -99,4 +99,15 @@ spec:
     targetPort: 3001
   selector:
     app: subql
-  type: LoadBalancer
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: appchain-subql-query-ingress-barnacle
+spec:
+  defaultBackend:
+    service:
+      name: appchain-subql-query-service-barnacle
+      port:
+        number: 3001
