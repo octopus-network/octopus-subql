@@ -41,7 +41,7 @@ spec:
           - -f=/workdir
           - --subquery-name=barnacle
           - --migrate
-          - --network-endpoint=wss://barnacle.rpc.testnet.oct.network:9944
+          - --network-endpoint=wss://gateway.testnet.octopus.network/barnacle/c2b940112e5dfee04d8569bc00412bba
         env:
         - name: DB_USER
           valueFrom:
