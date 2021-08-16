@@ -36,7 +36,7 @@ network:
     ObservationsPayload:
       public: "[u8; 30]"
       block_number: BlockNumber
-      fact_sequence: u64
+      fact_sequence: u32
       observations: Vec<Observation<AccountId>>
 
 dataSources:
