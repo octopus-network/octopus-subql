@@ -1,10 +1,16 @@
 specVersion: 0.0.1
-description: ''
+description: ""
 repository: https://github.com/octopus-network/octopus-subql
 schema: ./schema.graphql
 network:
   endpoint: wss://gateway.testnet.octopus.network/barnacle/c2b940112e5dfee04d8569bc00412bba
   types:
+    IdentificationTuple: "(ValidatorId, FullIdentification)"
+    FullIdentification: u128
+    Message:
+      nonce: u64
+      payload_type: PayloadType
+      payload: "Vec<u8>"
     BeefyKey: "[u8; 33]"
     SessionKeys5B: "(AccountId, AccountId, AccountId, AccountId, BeefyKey)"
     Validator:
@@ -13,16 +19,16 @@ network:
     ValidatorSet:
       sequence_number: u32
       set_id: u32
-      validators: Vec<Validator>
+      validators: "Vec<Validator>"
     BurnEvent:
       sequence_number: u32
-      sender_id: Vec<u8>
+      sender_id: "Vec<u8>"
       receiver: AccountId
       amount: u128
     LockEvent:
       sequence_number: u32
-      token_id: Vec<u8>
-      sender_id: Vec<u8>
+      token_id: "Vec<u8>"
+      sender_id: "Vec<u8>"
       receiver: AccountId
       amount: u128
     AssetIdOf: u32
@@ -36,8 +42,13 @@ network:
     ObservationsPayload:
       public: "[u8; 33]"
       block_number: BlockNumber
-      fact_sequence: u32
-      observations: Vec<Observation<AccountId>>
+      next_fact_sequence: u32
+      observations: "Vec<Observation<AccountId>>"
+    ObservationType:
+      _enum:
+        UpdateValidatorSet: UpdateValidatorSet
+        Burn: Burn
+        LockAsset: LockAsset
 
 dataSources:
   - name: main
