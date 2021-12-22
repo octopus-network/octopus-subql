@@ -20,8 +20,8 @@ steps:
   - subql-query.Dockerfile
   - .
 substitutions:
-  _NODE_RELEASE_VERSION: 0.15.1
-  _QUERY_RELEASE_VERSION: 0.5.1
+  _NODE_RELEASE_VERSION: 0.25.3
+  _QUERY_RELEASE_VERSION: 0.8.0
 images:
 - us-central1-docker.pkg.dev/$PROJECT_ID/octopus/$REPO_NAME-node
 - us-central1-docker.pkg.dev/$PROJECT_ID/octopus/$REPO_NAME-query
